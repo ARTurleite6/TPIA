@@ -62,11 +62,21 @@ class VectorRacer:
 
         self.posicao_inicial: tuple[int, int] = posicao_inicial
 
-    def check_bounds(self, posicao: tuple[int, int]) -> bool:
-        return posicao[0] >= 0 and posicao[0] < len(self.map) and posicao[1] >= 0 and posicao[1] < len(self.map[0])
+    def check_colision(self, posicao_atual: tuple[int, int], velocidade: tuple[int, int], posicao_final: tuple[int, int]) -> bool:
 
-    def check_position(self, posicao: tuple[int, int]) -> bool:
-        return self.check_bounds(posicao) and self.map[posicao[0]][posicao[1]] != 'X'
+        if posicao_final[0] >= len(self.map) or posicao_final[0] < 0 or posicao_final[1] >= len(self.map[0]) or posicao_final[1] < 0 or self.map[posicao_final[0]][posicao_final[1]]:
+            return False
+
+        velocidade_list = [velocidade[0], velocidade[1]]
+
+        current_position = [posicao_atual[0], posicao_atual[1]]
+        while current_position != posicao_final:
+            if abs(velocidade_list[0]) != abs(velocidade_list[1]):
+                pass
+            else:
+                pass
+
+        return True
             
     def prox_posicao(self, estado: Node, aceleracao: tuple[int, int]) -> tuple[Node, int]:
         posicao_atual = estado.get_posicao()
@@ -76,7 +86,7 @@ class VectorRacer:
         custo = 1
         if posicao_nova == posicao_atual:
             return (Node(posicao_nova), 0)
-        if not self.check_position(posicao_nova):
+        if not self.check_colision(posicao_atual, velocidade_nova, posicao_nova):
             posicao_nova = posicao_atual
             velocidade_nova = (0, 0)
             custo = 25
