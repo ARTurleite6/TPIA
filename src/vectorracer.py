@@ -62,20 +62,64 @@ class VectorRacer:
 
         self.posicao_inicial: tuple[int, int] = posicao_inicial
 
+    def check_bounds(self, position: list[int]) -> bool:
+            return position[0] >= 0 and position[0] < len(self.map) and position[1] >= 0 and position[1] < len(self.map[0])
+
     def check_colision(self, posicao_atual: tuple[int, int], velocidade: tuple[int, int], posicao_final: tuple[int, int]) -> bool:
+        velocidade_atual = list(velocidade)
+        current_position = list(posicao_atual)
 
-        if posicao_final[0] >= len(self.map) or posicao_final[0] < 0 or posicao_final[1] >= len(self.map[0]) or posicao_final[1] < 0 or self.map[posicao_final[0]][posicao_final[1]]:
-            return False
+        while current_position[0] != posicao_final[0] or current_position[1] != posicao_final[1]:
+            if abs(velocidade_atual[0]) == abs(velocidade_atual[1]):
+                if velocidade_atual[0] < 0:
+                    pos_y = current_position[0] - 1
+                else:
+                    pos_y = current_position[0] + 1
+                if velocidade_atual[1] < 0:
+                    pos_x = current_position[1] - 1
+                else:
+                    pos_x = current_position[1] + 1
+                if not self.check_bounds([pos_y, pos_x]) or (self.map[current_position[0]][pos_x] == 'X' and self.map[pos_y][current_position[1]] == 'X') or self.map[pos_y][pos_x] == 'X':
+                    return False
 
-        velocidade_list = [velocidade[0], velocidade[1]]
+                current_position = [pos_y, pos_x]
+                if velocidade_atual[0] < 0:
+                    velocidade_atual[0] += 1 
+                else:
+                     velocidade_atual[0] -= 1
+                if velocidade_atual[1] < 0:
+                    velocidade_atual[1] += 1 
+                else:
+                     velocidade_atual[1] -= 1
+            elif abs(velocidade_atual[0]) > abs(velocidade_atual[1]):
+                if velocidade_atual[0] < 0:
+                    pos_y = current_position[0] - 1
+                else:
+                    pos_y = current_position[0] + 1
+                if not self.check_bounds([pos_y, current_position[1]]) or(self.map[pos_y][current_position[1]] == 'X'):
+                    return False
+                
+                current_position = [pos_y, current_position[1]]
+                if velocidade_atual[0] < 0:
+                    velocidade_atual[0] += 1 
+                else:
+                    velocidade_atual[0] -= 1
+            elif abs(velocidade_atual[0]) < abs(velocidade_atual[1]):
+                if velocidade_atual[1] < 0:
+                    pos_x = current_position[1] - 1
+                else:
+                    pos_x = current_position[1] + 1
 
-        current_position = [posicao_atual[0], posicao_atual[1]]
-        while current_position != posicao_final:
-            if abs(velocidade_list[0]) != abs(velocidade_list[1]):
-                pass
-            else:
-                pass
-
+                if not self.check_bounds([current_position[0], pos_x]) or(self.map[current_position[0]][pos_x] == 'X'):
+                    return False
+                
+                current_position = [current_position[0], pos_x]
+                if velocidade_atual[1] < 0:
+                    velocidade_atual[1] += 1 
+                else:
+                    velocidade_atual[1] -= 1
+                
+                
         return True
             
     def prox_posicao(self, estado: Node, aceleracao: tuple[int, int]) -> tuple[Node, int]:
