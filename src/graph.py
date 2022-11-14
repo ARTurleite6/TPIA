@@ -1,3 +1,4 @@
+from queue import Queue
 
 class Node:
     def __init__(self, posicao: tuple[int, int], velocidade: tuple[int, int] = (0, 0)):
@@ -58,6 +59,62 @@ class Graph:
         return out
 
 
+    def dfs(self, posicao_inicial: Node, posicoes_finais: list[tuple[int, int]], path: list[Node] = [], visited: set[Node] = set()) -> tuple[list[Node], int] | None:
+        path.append(posicao_inicial)
+        visited.add(posicao_inicial)
+
+        print(posicao_inicial.get_posicao())
+
+        if posicao_inicial.get_posicao() in posicoes_finais:
+            return (path, 0)
+
+        for (adjacent, custo) in self.graph[posicao_inicial]:
+            if adjacent not in visited:
+                resultado = self.dfs(adjacent, posicoes_finais, path, visited)
+                if resultado is not None:
+                    return resultado
+
+        path.pop()
+        return None
+    
+    def bfs(self, posicao_inicial: Node, posicoes_finais: list[tuple[int, int]]):
+        visited = set()
+        queue = Queue()
+
+        queue.put(posicao_inicial)
+        visited.add(posicao_inicial)
+
+        parent = dict()
+        parent[posicao_inicial] = None
+
+        path_found = False
+
+        end = None
+
+        while not queue.empty() and path_found == False:
+            nodo_atual = queue.get()
+            if nodo_atual.get_posicao() in posicoes_finais:
+                end = Node(nodo_atual.get_posicao(), nodo_atual.get_velocidade())
+                path_found = True
+            else:
+                for(adjacent, peso) in self.graph[nodo_atual]:
+                    if adjacent not in visited:
+                        queue.put(adjacent)
+                        parent[adjacent] = nodo_atual
+                        visited.add(adjacent)
+
+        path = []
+        custo = 0
+
+        if path_found:
+            path.append(end)
+            while parent[end] is not None:
+                path.append(parent[end])
+                end = parent[end]
+            path.reverse()
+
+            custo = 0
+        return (path, custo)
 
 
 
