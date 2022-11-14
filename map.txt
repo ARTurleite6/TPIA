@@ -1,6 +1,6 @@
 XXXXXXXXXX
 XX---XX--X
-X--X-----F
+X--------F
 XP--XXX--F
 X--------F
 XXXX----XX
