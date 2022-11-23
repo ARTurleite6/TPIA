@@ -2,7 +2,7 @@ from vectorracer import VectorRacer
 import matplotlib.pyplot as pl
 
 def main():
-    racer = VectorRacer("map.txt")
+    racer = VectorRacer("Circuito50X30.txt")
     racer.load_graph()
 
     saida = -1
@@ -42,6 +42,8 @@ def main():
                 resultado_dfs = list(map(lambda node: str(node), resultado_dfs[0]))
                 print(resultado_dfs)
         elif saida == 7:
+            mat = racer.get_map_as_matrix()
+            print(mat)
             pl.imshow(racer.get_map_as_matrix())
             pl.show()
         else:

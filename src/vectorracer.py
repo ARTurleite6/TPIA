@@ -50,7 +50,10 @@ class VectorRacer:
         queue.put((nodo_inicial, 0))
         estados_visitados: set[tuple[Node, int]] = set()
 
+        i = 0;
         while not queue.empty():
+            # print(i)
+            i += 1
             nodo_atual = queue.get() 
             # print("nodo=", nodo_atual[0], "custo=", nodo_atual[1])
             estados_visitados.add(nodo_atual)
