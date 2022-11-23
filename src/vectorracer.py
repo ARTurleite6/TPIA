@@ -9,6 +9,32 @@ class VectorRacer:
         self.posicoes_finais = self.calcula_posicoes_finais()
         self.graph = Graph(True)
 
+    def __from_char_to_int__(self, sec: str) -> int:
+        if sec == 'X':
+            return 0
+        elif sec == '-':
+            return 1
+        elif sec == 'F':
+            return 2
+        elif sec == 'F':
+            return 3
+        elif sec == 'P':
+            return 4
+        else:
+            return 0
+             
+
+    def get_map_as_matrix(self) -> list[list[int]]:
+        mat = []
+        for (i, line) in enumerate(self.map):
+            mat.append([])
+            for col in line:
+                elem = self.__from_char_to_int__(col)
+                mat[i].append(elem)
+
+        return mat
+                    
+
     def calcula_posicoes_finais(self):
         resultados: list[tuple[int, int]] = []
         for (i, line) in enumerate(self.map):

@@ -1,4 +1,6 @@
 from queue import Queue
+import networkx as nx
+import matplotlib.pyplot as plt
 
 class Node:
     def __init__(self, posicao: tuple[int, int], velocidade: tuple[int, int] = (0, 0)):
@@ -28,6 +30,10 @@ class Graph:
         self.graph: dict[Node, set[tuple[Node, int]]] = {}
         self.heuristics = {} # ainda nao sei se vai ficar
 
+    def print_nodes(self) -> list[str]:
+        keys = self.graph.keys()
+        keys = list(map(lambda node : str(node), keys))
+        return keys
 
     def add_edge(self, node_1: Node, node_2: Node, weight):
         if node_1 not in self.graph:
@@ -55,15 +61,14 @@ class Graph:
     def __str__(self):
         out = ""
         for key in self.graph.keys():
-            out = out + "node" + str(key) + ": " + self.adjc_str(key) + "\n"
+            if len(self.graph[key]) != 0:
+                out += "Node" + str(key) + ": " + self.adjc_str(key) + "\n"
         return out
 
 
     def dfs(self, posicao_inicial: Node, posicoes_finais: list[tuple[int, int]], path: list[Node] = [], visited: set[Node] = set()) -> tuple[list[Node], int] | None:
         path.append(posicao_inicial)
         visited.add(posicao_inicial)
-
-        print(posicao_inicial.get_posicao())
 
         if posicao_inicial.get_posicao() in posicoes_finais:
             return (path, 0)
@@ -116,8 +121,17 @@ class Graph:
             custo = 0
         return (path, custo)
 
+    def desenha(self):
+        g = nx.Graph()
+        for (nodo, adjacentes) in self.graph.items():
+            g.add_node(nodo)
+            for (adjacente, peso) in adjacentes:
+                g.add_edge(nodo, adjacente, weight=peso) 
+        
+        pos = nx.spring_layout(g)
+        nx.draw_networkx(g, pos, with_labels=True, font_weight='bold')
+        labels = nx.get_edge_attributes(g, 'weight')
+        nx.draw_networkx_edge_labels(g, pos, edge_labels=labels)
 
-
-
-
-
+        plt.draw()
+        plt.show()
