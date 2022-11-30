@@ -78,7 +78,7 @@ def main():
                 resultado_dfs = racer.bfs()
                 if resultado_dfs is not None:
                     resultado_dfs_str = list(map(lambda node: str(node), resultado_dfs[0]))
-                    print(resultado_dfs_str, resultado_dfs[1])
+                    print("caminho=",resultado_dfs_str, "custo=",resultado_dfs[1])
             elif saida == 7:
                 mat = racer.get_map_as_matrix()
                 print(mat)
