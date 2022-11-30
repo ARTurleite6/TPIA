@@ -21,20 +21,27 @@ def main():
     while saida != 0:
         if mudar:
             print("1-Gerar mapa")
-            for i in range(len(maps)):
-                print(f"{i + 2}-Mapa {i + 1}") 
-                print(print_map(maps[i]))
+            print("2-Escolher mapa")
             map_choice = int(input()) 
-            if map_choice == 1:
+            if map_choice == 2:
+                for i in range(len(maps)):
+                    print(f"{i + 1}-Mapa {i + 1}") 
+                    print(print_map(maps[i]))
+                print("Escolhe um mapa...")
+                map_choice = int(input())
+                if map_choice >= 1 and map_choice <= len(maps):
+                    racer.load_map_from_file(maps[map_choice - 1])
+                    mudar = False
+                else:
+                    print("Opção inválida")
+            elif map_choice == 1:
                 print("Insira o numero de linhas")
                 linhas = int(input())
                 print("Insira o numero de colunas")
                 colunas = int(input())
                 racer.gen_map(linhas, colunas)
                 mudar = False
-            elif map_choice >= 2 and map_choice <= len(maps) + 1:
-                racer.load_map_from_file(maps[map_choice - 2])
-                mudar = False
+            # elif map_choice >= 2 and map_choice <= len(maps) + 1:
             else:
                 print("Opção inválida")
         if not mudar:

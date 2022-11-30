@@ -3,8 +3,13 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 class Node:
+    """
+    Classe Nodo que representa um estado com uma posicao e velocidade
+    """
     def __init__(self, posicao: tuple[int, int], velocidade: tuple[int, int] = (0, 0)):
+        #Posicao do carro num ponto
         self.posicao = posicao
+        #Velocidade do carro
         self.velocidade = velocidade 
 
     def get_posicao(self) -> tuple[int, int]:
@@ -25,6 +30,8 @@ class Node:
         return hash((self.posicao, self.velocidade))
 
 class Graph:
+    """
+    """
     def __init__(self, directed=False):
         self.directed: bool = directed
         self.graph: dict[Node, set[tuple[Node, int]]] = {}
