@@ -1,13 +1,48 @@
 from graph import Node, Graph
 from queue import Queue
+from random import randint
 
 class VectorRacer:
-    def __init__(self, file_map: str):
-        self.load_map_from_file(file_map)
-        self.calcula_posicao_inicial()
-        self.calcula_posicoes_finais()
-        self.posicoes_finais = self.calcula_posicoes_finais()
+    def __init__(self):
+        self.map = []
+        self.posicao_inicial = Node((0, 0))
+        self.posicoes_finais = []
         self.graph = Graph(True)
+
+    def gen_map(self, linhas: int, colunas: int):
+        valid = False
+        while not valid:
+            map = []
+            map.append(["X" for _ in range(colunas)])
+            
+            pieces = "X--"
+            for i in range(1, linhas - 1):
+                map.append(['X'])
+                for j in range(1, colunas - 1):
+                    map[i].append(pieces[randint(0, 2)]) 
+                map[i].append('X')
+                # for j in range(colunas - 1):
+                # map[i] += 
+            # for i in range(1, linhas - 1):
+            map[1][1] = "P"
+            map.append(["X" for _ in range(colunas)])
+
+            posicao_inicial = randint(1, linhas - 1 - 3)
+
+            map[posicao_inicial][-1] = map[posicao_inicial + 1][-1] = map[posicao_inicial + 2][-1] = "F"
+            for i in range(linhas):
+                map[i] = "".join(map[i])
+
+            self.map = map
+            self.posicao_inicial = Node((1, 1))
+            self.posicoes_finais = [(posicao_inicial, colunas - 1), (posicao_inicial + 1, colunas - 1), (posicao_inicial + 1, colunas - 2)]
+            self.load_graph()
+            if self.dfs() is not None:
+                for line in self.map:
+                    print(line)
+                valid = True
+                
+                
 
     def __from_char_to_int__(self, sec: str) -> int:
         if sec == 'X':
@@ -16,10 +51,8 @@ class VectorRacer:
             return 1
         elif sec == 'F':
             return 2
-        elif sec == 'F':
-            return 3
         elif sec == 'P':
-            return 4
+            return 3
         else:
             return 0
              
@@ -52,10 +85,8 @@ class VectorRacer:
 
         i = 0;
         while not queue.empty():
-            # print(i)
             i += 1
             nodo_atual = queue.get() 
-            # print("nodo=", nodo_atual[0], "custo=", nodo_atual[1])
             estados_visitados.add(nodo_atual)
             estados_possiveis = self.estados_possiveis(nodo_atual[0])
 
@@ -193,6 +224,10 @@ class VectorRacer:
             content = f.read().splitlines()
             for line in content:
                 self.map.append(line)
+
+        self.calcula_posicao_inicial()
+        self.posicoes_finais = self.calcula_posicoes_finais()
+        self.load_graph()
 
     def __str__(self):
         value = f"VectorRacer(posicao_inicial = {self.posicao_inicial}, \nmap = \n graph = {self.graph}"

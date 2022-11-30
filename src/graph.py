@@ -77,11 +77,11 @@ class Graph:
             if adjacent not in visited:
                 resultado = self.dfs(adjacent, posicoes_finais, path, visited)
                 if resultado is not None:
-                    return resultado
+                    return (resultado[0], resultado[1] + custo)
 
         path.pop()
         return None
-    
+
     def bfs(self, posicao_inicial: Node, posicoes_finais: list[tuple[int, int]]):
         visited = set()
         queue = Queue()
@@ -91,6 +91,8 @@ class Graph:
 
         parent = dict()
         parent[posicao_inicial] = None
+        custos = dict()
+        custos[posicao_inicial] = None
 
         path_found = False
 
@@ -106,6 +108,7 @@ class Graph:
                     if adjacent not in visited:
                         queue.put(adjacent)
                         parent[adjacent] = nodo_atual
+                        custos[adjacent] = peso
                         visited.add(adjacent)
 
         path = []
@@ -113,12 +116,14 @@ class Graph:
 
         if path_found:
             path.append(end)
+            custo += custos[end]
             while parent[end] is not None:
                 path.append(parent[end])
+                if custos[parent[end]] is not None:
+                    custo += custos[parent[end]]
                 end = parent[end]
             path.reverse()
 
-            custo = 0
         return (path, custo)
 
     def desenha(self):

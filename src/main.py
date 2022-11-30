@@ -1,54 +1,88 @@
 from vectorracer import VectorRacer
 import matplotlib.pyplot as pl
+from os import listdir
+
+MAPS_DIR = "./maps"
+
+def print_map(path_map: str) -> str:
+    with open(path_map) as file:
+        content = file.read()
+        return content
 
 def main():
-    racer = VectorRacer("Circuito50X30.txt")
-    racer.load_graph()
+    racer = VectorRacer()
+    maps = listdir(MAPS_DIR)
+    for i in range(len(maps)):
+        maps[i] = MAPS_DIR + "/" + maps[i]
+
+    mudar = True
 
     saida = -1
-
     while saida != 0:
-        print("1-Imprimir grafo ")
-        print("2-Desenhar Grafo")
-        print("3-Imprimir  nodos de Grafo")
-        print("4-Imprimir arestas de Grafo")
-        print("5-DFS")
-        print("6-BFS")
-        print("7-Representa mapa")
-        print("0-Saír")
+        if mudar:
+            print("1-Gerar mapa")
+            for i in range(len(maps)):
+                print(f"{i + 2}-Mapa {i + 1}") 
+                print(print_map(maps[i]))
+            map_choice = int(input()) 
+            if map_choice == 1:
+                print("Insira o numero de linhas")
+                linhas = int(input())
+                print("Insira o numero de colunas")
+                colunas = int(input())
+                racer.gen_map(linhas, colunas)
+                mudar = False
+            elif map_choice >= 2 and map_choice <= len(maps) + 1:
+                racer.load_map_from_file(maps[map_choice - 2])
+                mudar = False
+            else:
+                print("Opção inválida")
+        if not mudar:
+            print("1-Imprimir grafo ")
+            print("2-Desenhar Grafo")
+            print("3-Imprimir  nodos de Grafo")
+            print("4-Imprimir arestas de Grafo")
+            print("5-DFS")
+            print("6-BFS")
+            print("7-Representa mapa")
+            print("8-Mudar de Mapa")
+            print("0-Sair")
 
-        saida = int(input("introduza a sua opcao-> "))
-        if saida == 0:
-            print("saindo.......")
-        elif saida == 1:
-            print(racer.graph)
-            input("prima enter para continuar")
-        elif saida == 2:
-            racer.graph.desenha()
-        elif saida == 3:
-            print(racer.graph.print_nodes())
-            input("prima enter para continuar")
-        elif saida == 4:
-            print(racer.graph)
-            input("prima enter para continuar")
-        elif saida == 5:
-            caminho = racer.dfs()
-            if caminho is not None:
-                caminho_str = list(map(lambda nodo: str(nodo), caminho[0]))
-                print("caminho =", caminho_str)
-        elif saida == 6:
-            resultado_dfs = racer.bfs()
-            if resultado_dfs is not None:
-                resultado_dfs = list(map(lambda node: str(node), resultado_dfs[0]))
-                print(resultado_dfs)
-        elif saida == 7:
-            mat = racer.get_map_as_matrix()
-            print(mat)
-            pl.imshow(racer.get_map_as_matrix())
-            pl.show()
-        else:
-            print("you didn't add anything")
-            input("prima enter para continuar")
+            saida = int(input("introduza a sua opcao-> "))
+            if saida == 0:
+                print("saindo.......")
+            elif saida == 1:
+                print(racer.graph)
+                input("prima enter para continuar")
+            elif saida == 2:
+                racer.graph.desenha()
+            elif saida == 3:
+                print(racer.graph.print_nodes())
+                input("prima enter para continuar")
+            elif saida == 4:
+                print(racer.graph)
+                input("prima enter para continuar")
+            elif saida == 5:
+                caminho = racer.dfs()
+                if caminho is not None:
+                    caminho_str = list(map(lambda nodo: str(nodo), caminho[0]))
+                    print("caminho =", caminho_str, ", custo=", caminho[1])
+            elif saida == 6:
+                resultado_dfs = racer.bfs()
+                if resultado_dfs is not None:
+                    resultado_dfs_str = list(map(lambda node: str(node), resultado_dfs[0]))
+                    print(resultado_dfs_str, resultado_dfs[1])
+            elif saida == 7:
+                mat = racer.get_map_as_matrix()
+                print(mat)
+                pl.imshow(racer.get_map_as_matrix())
+                pl.show()
+            elif saida == 8:
+                print("Mudando de mapa")
+                mudar = True
+            else:
+                print("you didn't add anything")
+                input("prima enter para continuar")
 
 if __name__ == "__main__":
     main()
