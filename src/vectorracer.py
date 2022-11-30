@@ -15,11 +15,11 @@ class VectorRacer:
             map = []
             map.append(["X" for _ in range(colunas)])
             
-            pieces = "X--"
+            pieces = "X-----"
             for i in range(1, linhas - 1):
                 map.append(['X'])
-                for j in range(1, colunas - 1):
-                    map[i].append(pieces[randint(0, 2)]) 
+                for _ in range(1, colunas - 1):
+                    map[i].append(pieces[randint(0, 5)]) 
                 map[i].append('X')
                 # for j in range(colunas - 1):
                 # map[i] += 
