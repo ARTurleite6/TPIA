@@ -110,23 +110,17 @@ class VectorRacer:
         queue: Queue[tuple[Node, int]] = Queue()
         queue.put((nodo_inicial, 0))
         estados_visitados: set[tuple[Node, int]] = set()
-        # estados_visitados: set[Node] = set()
 
-
-        i = 0;
         while not queue.empty():
             nodo_atual = queue.get() 
             estados_visitados.add(nodo_atual)
             estados_possiveis = self.estados_possiveis(nodo_atual[0])
 
+            print("len de estados_possiveis=", len(estados_possiveis))
             for estado in estados_possiveis:
                 if estado not in estados_visitados:
-                    i += 1
                     self.graph.add_edge(nodo_atual[0], estado[0], estado[1]) 
                     queue.put(estado)
-        sum = 0
-        for adjacencias in self.graph.graph.values():
-            sum += len(adjacencias)
 
 
     """
