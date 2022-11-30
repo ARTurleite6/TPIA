@@ -40,11 +40,17 @@ class Graph:
     def clear(self):
         self.graph.clear()
 
+    """
+    Funcao que transforma os nodos numa lista de stirngs
+    """
     def print_nodes(self) -> list[str]:
         keys = self.graph.keys()
         keys = list(map(lambda node : str(node), keys))
         return keys
 
+    """
+    funcao que adiciona uma adjacencia ao grafo
+    """
     def add_edge(self, node_1: Node, node_2: Node, weight):
         if node_1 not in self.graph:
             self.graph[node_1] = set()
@@ -76,6 +82,9 @@ class Graph:
         return out
 
 
+    """
+    Funcao que calcula um caminho com dfs
+    """
     def dfs(self, posicao_inicial: Node, posicoes_finais: list[tuple[int, int]], path: list[Node] = [], visited: set[Node] = set()) -> tuple[list[Node], int] | None:
         path.append(posicao_inicial)
         visited.add(posicao_inicial)
@@ -92,6 +101,9 @@ class Graph:
         path.pop()
         return None
 
+    """
+    Funcao que calcula um caminho com bfs
+    """
     def bfs(self, posicao_inicial: Node, posicoes_finais: list[tuple[int, int]]):
         visited = set()
         queue = Queue()
