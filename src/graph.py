@@ -37,6 +37,9 @@ class Graph:
         self.graph: dict[Node, set[tuple[Node, int]]] = {}
         self.heuristics = {} # ainda nao sei se vai ficar
 
+    def clear(self):
+        self.graph.clear()
+
     def print_nodes(self) -> list[str]:
         keys = self.graph.keys()
         keys = list(map(lambda node : str(node), keys))

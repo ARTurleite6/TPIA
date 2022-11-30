@@ -24,6 +24,10 @@ class VectorRacer:
     Funcao que gera um mapa recebendo um numero de linhas e colunas, o mapa gerado será random
     """
     def gen_map(self, linhas: int, colunas: int):
+        self.map = []
+        self.graph.clear()
+        self.posicoes_finais = []
+        self.posicao_inicial = Node((0, 0))
         valid = False
         while not valid:
             map = []
@@ -105,19 +109,26 @@ class VectorRacer:
         nodo_inicial = self.posicao_inicial
         queue: Queue[tuple[Node, int]] = Queue()
         queue.put((nodo_inicial, 0))
-        estados_visitados: set[tuple[Node, int]] = set()
+        # estados_visitados: set[tuple[Node, int]] = set()
+        estados_visitados: set[Node] = set()
+
 
         i = 0;
         while not queue.empty():
-            i += 1
             nodo_atual = queue.get() 
-            estados_visitados.add(nodo_atual)
+            estados_visitados.add(nodo_atual[0])
             estados_possiveis = self.estados_possiveis(nodo_atual[0])
 
             for estado in estados_possiveis:
-                if estado not in estados_visitados:
+                if estado[0] not in estados_visitados:
+                    i += 1
                     self.graph.add_edge(nodo_atual[0], estado[0], estado[1]) 
                     queue.put(estado)
+        print("i=", i)
+        sum = 0
+        for adjacencias in self.graph.graph.values():
+            sum += len(adjacencias)
+        print("numero de nodos=", sum)
 
 
     """
@@ -142,6 +153,9 @@ class VectorRacer:
         estados = set()
     
         for aceleracao in aceleracoes_possiveis:
+            # print("estado_inicial=", estado)
+            # for estado_i in estados:
+            #     print("estado=", str(estado_i[0]), "custo=", estado_i[1])
             estados.add(self.prox_posicao(estado, aceleracao))
 
         return estados
@@ -266,6 +280,7 @@ class VectorRacer:
     Funcao que recebe um caminho para um ficheiro de texto com a localização do mapa, dando load ao mesmo
     """
     def load_map_from_file(self, file: str):
+        self.graph.clear()
         self.map: list[str] = []
         with open(file) as f:
             content = f.read().splitlines()
