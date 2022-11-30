@@ -116,7 +116,6 @@ class VectorRacer:
             estados_visitados.add(nodo_atual)
             estados_possiveis = self.estados_possiveis(nodo_atual[0])
 
-            print("len de estados_possiveis=", len(estados_possiveis))
             for estado in estados_possiveis:
                 if estado not in estados_visitados:
                     self.graph.add_edge(nodo_atual[0], estado[0], estado[1]) 
