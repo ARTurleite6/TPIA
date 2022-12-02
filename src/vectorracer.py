@@ -1,6 +1,7 @@
 from graph import Node, Graph
 from queue import Queue
 from random import randint
+from time import time
 
 class VectorRacer:
     """
@@ -109,17 +110,22 @@ class VectorRacer:
         nodo_inicial = self.posicao_inicial
         queue: Queue[tuple[Node, int]] = Queue()
         queue.put((nodo_inicial, 0))
-        estados_visitados: set[tuple[Node, int]] = set()
 
+        tempo = time()
+        i = 0
         while not queue.empty():
             nodo_atual = queue.get() 
-            estados_visitados.add(nodo_atual)
+
             estados_possiveis = self.estados_possiveis(nodo_atual[0])
 
             for estado in estados_possiveis:
-                if estado not in estados_visitados:
+                if not self.graph.ja_tem_adjacencia(nodo_atual[0], estado[0], estado[1]):
                     self.graph.add_edge(nodo_atual[0], estado[0], estado[1]) 
                     queue.put(estado)
+        fim = time()
+
+        print("tempo gasto =", fim - tempo)
+        print("numero de nodos = ", i)
 
 
     """

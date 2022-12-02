@@ -36,6 +36,7 @@ class Graph:
         self.directed: bool = directed
         self.graph: dict[Node, set[tuple[Node, int]]] = {}
         self.heuristics = {} # ainda nao sei se vai ficar
+        self.testes = 0
 
     def clear(self):
         self.graph.clear()
@@ -47,6 +48,11 @@ class Graph:
         keys = self.graph.keys()
         keys = list(map(lambda node : str(node), keys))
         return keys
+
+    def ja_tem_adjacencia(self, nodo: Node, nodo_2: Node, peso: int):
+        if nodo not in self.graph or nodo_2 not in self.graph:
+            return False
+        return (nodo_2, peso) in self.graph[nodo]
 
     """
     funcao que adiciona uma adjacencia ao grafo
