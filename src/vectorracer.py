@@ -112,7 +112,6 @@ class VectorRacer:
         queue.put((nodo_inicial, 0))
 
         tempo = time()
-        i = 0
         while not queue.empty():
             nodo_atual = queue.get() 
 
@@ -125,7 +124,6 @@ class VectorRacer:
         fim = time()
 
         print("tempo gasto =", fim - tempo)
-        print("numero de nodos = ", i)
 
 
     """
