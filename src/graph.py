@@ -36,7 +36,6 @@ class Graph:
         self.directed: bool = directed
         self.graph: dict[Node, set[tuple[Node, int]]] = {}
         self.heuristics = {} # ainda nao sei se vai ficar
-        self.testes = 0
 
     def clear(self):
         self.graph.clear()

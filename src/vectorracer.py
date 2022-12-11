@@ -12,11 +12,11 @@ class VectorRacer:
         #Mapa
         self.map = []
         #posicao inicial('P') do mapa
-        self.posicao_inicial = Node((0, 0))
+        self.posicao_inicial = []
         #posicoes finais('F') do mapa
         self.posicoes_finais = []
         #representação do grafo pelo mapa
-        self.graph = Graph(True)
+        self.graphs: list[Graph] = []
 
     """
     linhas: int: numero de linhas que novo mapa deve ter
@@ -24,43 +24,43 @@ class VectorRacer:
 
     Funcao que gera um mapa recebendo um numero de linhas e colunas, o mapa gerado será random
     """
-    def gen_map(self, linhas: int, colunas: int):
-        self.map = []
-        self.graph.clear()
-        self.posicoes_finais = []
-        self.posicao_inicial = Node((0, 0))
-        valid = False
-        while not valid:
-            map = []
-            map.append(["X" for _ in range(colunas)])
-            
-            pieces = "X---"
-            for i in range(1, linhas - 1):
-                map.append(['X'])
-                for _ in range(1, colunas - 1):
-                    map[i].append(pieces[randint(0, 3)]) 
-                map[i].append('X')
-                # for j in range(colunas - 1):
-                # map[i] += 
-            # for i in range(1, linhas - 1):
-            map[1][1] = "P"
-            map.append(["X" for _ in range(colunas)])
-
-            posicao_inicial = randint(1, linhas - 1 - 3)
-
-            map[posicao_inicial][-1] = map[posicao_inicial + 1][-1] = map[posicao_inicial + 2][-1] = "F"
-            for i in range(linhas):
-                map[i] = "".join(map[i])
-
-            self.map = map
-            self.posicao_inicial = Node((1, 1))
-            self.posicoes_finais = [(posicao_inicial, colunas - 1), (posicao_inicial + 1, colunas - 1), (posicao_inicial + 1, colunas - 2)]
-            self.load_graph()
-            if self.dfs() is not None:
-                for line in self.map:
-                    print(line)
-                valid = True
-                
+    # def gen_map(self, linhas: int, colunas: int):
+    #     self.map = []
+    #     self.graph.clear()
+    #     self.posicoes_finais = []
+    #     self.posicao_inicial = Node((0, 0))
+    #     valid = False
+    #     while not valid:
+    #         map = []
+    #         map.append(["X" for _ in range(colunas)])
+    #         
+    #         pieces = "X---"
+    #         for i in range(1, linhas - 1):
+    #             map.append(['X'])
+    #             for _ in range(1, colunas - 1):
+    #                 map[i].append(pieces[randint(0, 3)]) 
+    #             map[i].append('X')
+    #             # for j in range(colunas - 1):
+    #             # map[i] += 
+    #         # for i in range(1, linhas - 1):
+    #         map[1][1] = "P"
+    #         map.append(["X" for _ in range(colunas)])
+    #
+    #         posicao_inicial = randint(1, linhas - 1 - 3)
+    #
+    #         map[posicao_inicial][-1] = map[posicao_inicial + 1][-1] = map[posicao_inicial + 2][-1] = "F"
+    #         for i in range(linhas):
+    #             map[i] = "".join(map[i])
+    #
+    #         self.map = map
+    #         self.posicao_inicial = Node((1, 1))
+    #         self.posicoes_finais = [(posicao_inicial, colunas - 1), (posicao_inicial + 1, colunas - 1), (posicao_inicial + 1, colunas - 2)]
+    #         self.load_graph()
+    #         if self.dfs() is not None:
+    #             for line in self.map:
+    #                 print(line)
+    #             valid = True
+    #             
     """
     Função que transforma um caracter do mapa para um inteiro(codigo de caracter)
     """
@@ -107,26 +107,29 @@ class VectorRacer:
     Funcao que gera o grafo a partir do mapa definido, explorando as opções a partir de um estado 
     """
     def load_graph(self):
-        nodo_inicial = self.posicao_inicial
-        queue: Queue[tuple[Node, int]] = Queue()
-        estados_visitados: set[tuple[Node, int]] = set()
-        queue.put((nodo_inicial, 0))
-        estados_visitados.add((nodo_inicial, 0))
+        for (posicao_inicial) in self.posicao_inicial:
+            graph = Graph(True)
+            nodo_inicial = posicao_inicial
+            queue: Queue[tuple[Node, int]] = Queue()
+            estados_visitados: set[tuple[Node, int]] = set()
+            queue.put((nodo_inicial, 0))
+            estados_visitados.add((nodo_inicial, 0))
 
 
-        tempo = time()
-        while not queue.empty():
-            nodo_atual = queue.get() 
-            estados_possiveis = self.estados_possiveis(nodo_atual[0])
+            tempo = time()
+            while not queue.empty():
+                nodo_atual = queue.get() 
+                estados_possiveis = self.estados_possiveis(nodo_atual[0])
+    
+                for estado in estados_possiveis:
+                    if estado not in estados_visitados:
+                        graph.add_edge(nodo_atual[0], estado[0], estado[1]) 
+                        queue.put(estado)
+                        estados_visitados.add(estado)
+            fim = time()
 
-            for estado in estados_possiveis:
-                if estado not in estados_visitados:
-                    self.graph.add_edge(nodo_atual[0], estado[0], estado[1]) 
-                    queue.put(estado)
-                    estados_visitados.add(estado)
-        fim = time()
-
-        print("tempo gasto =", fim - tempo)
+            print("tempo gasto =", fim - tempo)
+            self.graphs.append(graph)
 
 
     """
@@ -151,7 +154,6 @@ class VectorRacer:
         estados = set()
     
         for aceleracao in aceleracoes_possiveis:
-            # for estado_i in estados:
             estados.add(self.prox_posicao(estado, aceleracao))
 
         return estados
@@ -160,22 +162,20 @@ class VectorRacer:
     """
     Funcao que encontra a posicao inicial no mapa, ou seja, o caracter P
     """
-    def calcula_posicao_inicial(self):
-        posicao_inicial = (0, 0)
+    def calcula_posicoes_inicial(self):
+        posicao_inicial = []
         found = False
         for (line, list) in enumerate(self.map):
             for (column, value) in enumerate(list):
                 if value == 'P':
-                    posicao_inicial = (line, column)
+                    posicao_inicial.append((line, column))
                     found = True
-                    break
-            if found:
-                break
 
         if not found:
             raise Exception("Posicao inicial não encontrada, insira um P no mapa")
 
-        self.posicao_inicial: Node = Node(posicao_inicial)
+        for posicao in posicao_inicial:
+            self.posicao_inicial.append(Node(posicao))
 
         """
         Funcao que verifica se uma posicao se encontra nos limites do mapa
@@ -276,19 +276,19 @@ class VectorRacer:
     Funcao que recebe um caminho para um ficheiro de texto com a localização do mapa, dando load ao mesmo
     """
     def load_map_from_file(self, file: str):
-        self.graph.clear()
+        self.graphs.clear()
         self.map: list[str] = []
         with open(file) as f:
             content = f.read().splitlines()
             for line in content:
                 self.map.append(line)
 
-        self.calcula_posicao_inicial()
+        self.calcula_posicoes_inicial()
         self.posicoes_finais = self.calcula_posicoes_finais()
         self.load_graph()
 
     def __str__(self):
-        value = f"VectorRacer(posicao_inicial = {self.posicao_inicial}, \nmap = \n graph = {self.graph}"
+        value = f"VectorRacer(posicao_inicial = {self.posicao_inicial}, \nmap = \n graph = {self.graphs}"
         for line in self.map:
             value += line + '\n'
 
@@ -299,10 +299,10 @@ class VectorRacer:
     Funcao que calcula o caminho através do algoritmo DFS 
     """
     def dfs(self):
-        return self.graph.dfs(self.posicao_inicial, self.posicoes_finais)
+        return self.graphs[0].dfs(self.posicao_inicial[0], self.posicoes_finais)
 
     """
     Funcao que calcula um caminho através do algoritmo BFS
     """
     def bfs(self):
-        return self.graph.bfs(self.posicao_inicial, self.posicoes_finais)
+        return self.graphs[0].bfs(self.posicao_inicial[0], self.posicoes_finais)

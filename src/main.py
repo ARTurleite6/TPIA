@@ -59,15 +59,15 @@ def main():
             if saida == 0:
                 print("saindo.......")
             elif saida == 1:
-                print(racer.graph)
+                print(racer.graphs[0])
                 input("prima enter para continuar")
             elif saida == 2:
-                racer.graph.desenha()
+                racer.graphs[0].desenha()
             elif saida == 3:
-                print(racer.graph.print_nodes())
+                print(racer.graphs[0].print_nodes())
                 input("prima enter para continuar")
             elif saida == 4:
-                print(racer.graph)
+                print(racer.graphs[0])
                 input("prima enter para continuar")
             elif saida == 5:
                 caminho = racer.dfs()
