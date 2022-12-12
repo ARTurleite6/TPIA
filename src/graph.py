@@ -33,6 +33,7 @@ class Graph:
     """
     """
     def __init__(self, directed=False):
+        
         self.directed: bool = directed
         self.graph: dict[Node, set[tuple[Node, int]]] = {}
         self.heuristics = {} # ainda nao sei se vai ficar
@@ -91,6 +92,7 @@ class Graph:
     Funcao que calcula um caminho com dfs
     """
     def dfs(self, posicao_inicial: Node, posicoes_finais: list[tuple[int, int]], path: list[Node] = [], visited: set[Node] = set()) -> tuple[list[Node], int] | None:
+        print(list(map(lambda x: str(x), path)))
         path.append(posicao_inicial)
         visited.add(posicao_inicial)
 

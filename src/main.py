@@ -71,18 +71,26 @@ def main():
                 input("prima enter para continuar")
             elif saida == 5:
                 caminho = racer.dfs()
+                print(caminho)
                 if caminho is not None:
-                    caminho_str = list(map(lambda nodo: str(nodo), caminho[0]))
-                    print("caminho =", caminho_str, ", custo=", caminho[1])
+                    caminho_str = list(map(lambda nodo: str(nodo), caminho[0][0]))
+                    print("caminho =", caminho_str, ", custo=", caminho[0][1])
+                    mat = racer.show_path_map(caminho)
+                    pl.imshow(mat)
+                    pl.show()
             elif saida == 6:
-                resultado_dfs = racer.bfs()
-                if resultado_dfs is not None:
-                    resultado_dfs_str = list(map(lambda node: str(node), resultado_dfs[0]))
-                    print("caminho=",resultado_dfs_str, "custo=",resultado_dfs[1])
+                resultado_bfs = racer.bfs()
+                print(resultado_bfs)
+                if resultado_bfs is not None:
+                    resultado_dfs_str = list(map(lambda node: str(node), resultado_bfs[0][0]))
+                    print("caminho=",resultado_dfs_str, "custo=",resultado_bfs[0][1])
+                    mat = racer.show_path_map(resultado_bfs)
+                    pl.imshow(mat)
+                    pl.show()
             elif saida == 7:
                 mat = racer.get_map_as_matrix()
                 print(mat)
-                pl.imshow(racer.get_map_as_matrix())
+                pl.imshow(mat)
                 pl.show()
             elif saida == 8:
                 print("Mudando de mapa")

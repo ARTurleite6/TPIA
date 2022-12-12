@@ -80,9 +80,10 @@ class VectorRacer:
     """
     Funcao que gera uma matriz a partir do mapa, colocando cara caracter pelo codigo correspondente
     """
-    def get_map_as_matrix(self) -> list[list[int]]:
+    def get_map_as_matrix(self, map_to_use: list[str] | None = None) -> list[list[int]]:
+        map = self.map if map_to_use is None else map_to_use
         mat = []
-        for (i, line) in enumerate(self.map):
+        for (i, line) in enumerate(map):
             mat.append([])
             for col in line:
                 elem = self.__from_char_to_int__(col)
@@ -188,13 +189,17 @@ class VectorRacer:
     Funcao que testa se de uma posicao até outra com uma determinada velocidade colide ou não com uma parede
     A Funcao retorna (-1, -1) se nao tiver encontrado o final do mapa, e retorna a posicao final caso tenha encontrado um 'F' pelo caminho
     """
-    def check_colision(self, posicao_atual: tuple[int, int], velocidade: tuple[int, int], posicao_final: tuple[int, int]) -> tuple[int, int] | None:
+    def check_colision(self, posicao_atual: tuple[int, int], velocidade: tuple[int, int], posicao_final: tuple[int, int]) -> tuple[list[tuple[int, int]], tuple[int, int]] | None:
+        path = []
         velocidade_atual = list(velocidade)
         current_position = list(posicao_atual)
 
         while current_position[0] != posicao_final[0] or current_position[1] != posicao_final[1]:
+            print("posicao = ", current_position)
+            path.append((current_position[0], current_position[1]))
+            print("path=", path)
             if (self.map[current_position[0]][current_position[1]] == 'F'):
-                return (current_position[0], current_position[1])
+                return (path, (current_position[0], current_position[1]))
             if abs(velocidade_atual[0]) == abs(velocidade_atual[1]):
                 if velocidade_atual[0] < 0:
                     pos_y = current_position[0] - 1
@@ -245,7 +250,8 @@ class VectorRacer:
                     velocidade_atual[1] -= 1
                 
                 
-        return (-1, -1)
+        path.append((current_position[0], current_position[1]))
+        return (path, (-1, -1))
             
     """
     Funcao que calcula um par de Nodo e custo a partir de um estado aplicado a uma determinada aceleracao
@@ -266,8 +272,8 @@ class VectorRacer:
             velocidade_nova = (0, 0)
             custo = 25
         #caso em que no check_colision encontrou uma posicao final do mapa
-        elif resultado != (-1, -1):
-            posicao_nova = resultado
+        elif resultado[1] != (-1, -1):
+            posicao_nova = resultado[1]
             velocidade_nova = (0, 0)
         estado_novo = Node(posicao_nova, velocidade_nova)
         return (estado_novo, custo)
@@ -298,11 +304,39 @@ class VectorRacer:
     """
     Funcao que calcula o caminho através do algoritmo DFS 
     """
-    def dfs(self):
-        return self.graphs[0].dfs(self.posicao_inicial[0], self.posicoes_finais)
+    def dfs(self) -> list[tuple[list[Node], int]]:
+        ans: list[tuple[list[Node], int]] = []
+        for (index, graph) in enumerate(self.graphs):
+            caminho = graph.dfs(self.posicao_inicial[index], self.posicoes_finais, [], set())
+            if caminho is not None:
+                ans.append(caminho) 
+        return ans
 
     """
     Funcao que calcula um caminho através do algoritmo BFS
     """
     def bfs(self):
-        return self.graphs[0].bfs(self.posicao_inicial[0], self.posicoes_finais)
+        ans: list[tuple[list[Node], int]] = []
+        for(index, graph) in enumerate(self.graphs):
+            caminho = graph.bfs(self.posicao_inicial[index], self.posicoes_finais)
+            if caminho is not None:
+                ans.append(caminho)
+        return ans
+
+    def show_path_map(self, paths: list[tuple[list[Node], int]]) -> list[list[int]]:
+        mat = self.get_map_as_matrix()
+        car = 0
+        for i in range(len(paths[0][0]) - 1):
+            current_point = paths[0][0][i]
+            next_point = paths[0][0][i + 1]
+            print("current_point =", current_point)
+            print("next_point =", next_point)
+            caminho = self.check_colision(current_point.get_posicao(), next_point.get_velocidade(), next_point.get_posicao())
+            print("caminho = ", caminho)
+            caminho = [] if caminho is None else caminho[0]
+
+            for point in caminho:
+                print("ola")
+                mat[point[0]][point[1]] = car + 4 
+            
+        return mat
