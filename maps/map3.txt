@@ -20,5 +20,5 @@ X-----XXX---XX------XXX---XXXX
 X--XX-----XXX-----X----------X
 X-------XX---XXX-----X-------F
 X-----XXX-------XX--X--------F
-X---XXX--------XXX--XXX------F
+XP--XXX--------XXX--XXX------F
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

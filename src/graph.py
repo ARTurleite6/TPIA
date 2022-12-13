@@ -92,7 +92,6 @@ class Graph:
     Funcao que calcula um caminho com dfs
     """
     def dfs(self, posicao_inicial: Node, posicoes_finais: list[tuple[int, int]], path: list[Node] = [], visited: set[Node] = set()) -> tuple[list[Node], int] | None:
-        print(list(map(lambda x: str(x), path)))
         path.append(posicao_inicial)
         visited.add(posicao_inicial)
 
@@ -111,8 +110,8 @@ class Graph:
     """
     Funcao que calcula um caminho com bfs
     """
-    def bfs(self, posicao_inicial: Node, posicoes_finais: list[tuple[int, int]]):
-        visited = set()
+    def bfs(self, posicao_inicial: Node, posicoes_finais: list[tuple[int, int]], path: list[Node] = [], visited: set[Node] = set()) -> tuple[list[Node], int]:
+        print("ola")
         queue = Queue()
 
         queue.put(posicao_inicial)
@@ -140,7 +139,6 @@ class Graph:
                         custos[adjacent] = peso
                         visited.add(adjacent)
 
-        path = []
         custo = 0
 
         if path_found:

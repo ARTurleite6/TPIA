@@ -1,6 +1,6 @@
+from collections.abc import Callable
 from graph import Node, Graph
 from queue import Queue
-from random import randint
 from time import time
 
 class VectorRacer:
@@ -282,6 +282,9 @@ class VectorRacer:
     """
     def load_map_from_file(self, file: str):
         self.graphs.clear()
+        self.posicao_inicial.clear()
+        self.posicoes_finais.clear()
+        print("numero de grafos = ",len(self.graphs))
         self.map: list[str] = []
         with open(file) as f:
             content = f.read().splitlines()
@@ -300,17 +303,43 @@ class VectorRacer:
         value += ");"
         return value
 
-    def __caminho_colisao__(self, index: int, my_path: list[Node], other_paths: list[list[Node]]) -> tuple[Node, int] | None:
+    def __caminho_colisao__(self, index: int, my_path: list[Node], other_paths: list[list[Node]]) -> tuple[Node, Node, int] | None:
         for(n_node, node) in enumerate(my_path):
             for (n_path, path) in enumerate(other_paths):
                 if(n_path == index):
                     break
-                if n_node < len(path):
-                    if node.get_posicao() == path[n_node].get_posicao():
-                        return node, n_node
+                if n_node < len(path) - 1:
+                    fst_velocidade = node.get_velocidade()
+                    snd_velocidade = path[n_node].get_velocidade()
+                    if node.get_posicao() == path[n_node].get_posicao() and fst_velocidade[0] + fst_velocidade[1] < snd_velocidade[0] + snd_velocidade[1]:
+                        print("nodo_fst =", str(node.get_posicao()), "nodo_snd =", str(path[n_node].get_posicao()))
+                        return node, path[n_node], n_node
         
         return None
                 
+
+    def get_valid_paths(self, paths: list[tuple[list[Node], int]], algoritmo: Callable[[Graph, Node, list[tuple[int, int]], list[Node], set[Node]], tuple[list[Node], int] | None]) -> list[tuple[list[Node], int]]:
+        for (i, path) in enumerate(paths):
+            posicoes_colisoes = set()
+            colisao = self.__caminho_colisao__(i, path[0], list(map(lambda path: path[0], paths)))
+            new_path = path
+            while colisao is not None:
+                if new_path is not None:
+                    print(list(map(lambda node: str(node), new_path[0])))
+                (fst, snd, _) = colisao
+                fst_velocidade = fst.get_velocidade()
+                snd_velocidade = snd.get_velocidade()
+                if fst_velocidade[0] + fst_velocidade[1] < snd_velocidade[0] + snd_velocidade[1]:
+                    posicoes_colisoes.add(fst) 
+                    print("colisoes =", list(map(lambda node: str(node), posicoes_colisoes)))
+                    new_path = algoritmo(self.graphs[i], self.posicao_inicial[i], self.posicoes_finais, [], posicoes_colisoes)
+                    if new_path is None:
+                        break
+                        
+                colisao = self.__caminho_colisao__(i, new_path[0], list(map(lambda path: path[0], paths)))
+            if new_path is not None:
+                paths[i] = new_path
+        return paths
 
     """
     Funcao que calcula o caminho através do algoritmo DFS 
@@ -321,9 +350,8 @@ class VectorRacer:
             caminho = graph.dfs(self.posicao_inicial[index], self.posicoes_finais, [], set())
             if caminho is not None:
                 ans.append(caminho) 
-        
-        # for (index, (caminho, custo)) in enumerate(ans):
-        #     inv = self.__caminho_valido__(index, caminho, list(map(lambda caminho: caminho[0], ans)))
+
+        ans = self.get_valid_paths(ans, Graph.dfs)       
             
         return ans
 
@@ -333,9 +361,12 @@ class VectorRacer:
     def bfs(self):
         ans: list[tuple[list[Node], int]] = []
         for(index, graph) in enumerate(self.graphs):
-            caminho = graph.bfs(self.posicao_inicial[index], self.posicoes_finais)
+            caminho = graph.bfs(self.posicao_inicial[index], self.posicoes_finais, [], set())
+            print("caminho do indice =", index, "com caminho =", list(map(lambda node: str(node), caminho[0])))
             if caminho is not None:
                 ans.append(caminho)
+
+        ans = self.get_valid_paths(ans, Graph.bfs)
         return ans
 
     def show_path_map(self, paths: list[tuple[list[Node], int]]) -> list[list[int]]:
