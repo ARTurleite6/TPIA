@@ -66,16 +66,18 @@ class VectorRacer:
     """
     def __from_char_to_int__(self, sec: str) -> int:
         if sec == 'X':
-            return 0
-        elif sec == '-':
             return 1
-        elif sec == 'F':
+        elif sec == '-':
             return 2
-        elif sec == 'P':
+        elif sec == 'F':
             return 3
+        elif sec == 'P':
+            return 4
         else:
             return 0
              
+    def __has_car__(self, sec: int) -> int:
+        return sec >= 5
 
     """
     Funcao que gera uma matriz a partir do mapa, colocando cara caracter pelo codigo correspondente
@@ -129,7 +131,6 @@ class VectorRacer:
                         estados_visitados.add(estado)
             fim = time()
 
-            print("tempo gasto =", fim - tempo)
             self.graphs.append(graph)
 
 
@@ -195,9 +196,7 @@ class VectorRacer:
         current_position = list(posicao_atual)
 
         while current_position[0] != posicao_final[0] or current_position[1] != posicao_final[1]:
-            print("posicao = ", current_position)
             path.append((current_position[0], current_position[1]))
-            print("path=", path)
             if (self.map[current_position[0]][current_position[1]] == 'F'):
                 return (path, (current_position[0], current_position[1]))
             if abs(velocidade_atual[0]) == abs(velocidade_atual[1]):
@@ -250,7 +249,7 @@ class VectorRacer:
                     velocidade_atual[1] -= 1
                 
                 
-        path.append((current_position[0], current_position[1]))
+        # path.append((current_position[0], current_position[1]))
         return (path, (-1, -1))
             
     """
@@ -301,6 +300,18 @@ class VectorRacer:
         value += ");"
         return value
 
+    def __caminho_colisao__(self, index: int, my_path: list[Node], other_paths: list[list[Node]]) -> tuple[Node, int] | None:
+        for(n_node, node) in enumerate(my_path):
+            for (n_path, path) in enumerate(other_paths):
+                if(n_path == index):
+                    break
+                if n_node < len(path):
+                    if node.get_posicao() == path[n_node].get_posicao():
+                        return node, n_node
+        
+        return None
+                
+
     """
     Funcao que calcula o caminho através do algoritmo DFS 
     """
@@ -310,6 +321,10 @@ class VectorRacer:
             caminho = graph.dfs(self.posicao_inicial[index], self.posicoes_finais, [], set())
             if caminho is not None:
                 ans.append(caminho) 
+        
+        # for (index, (caminho, custo)) in enumerate(ans):
+        #     inv = self.__caminho_valido__(index, caminho, list(map(lambda caminho: caminho[0], ans)))
+            
         return ans
 
     """
@@ -325,18 +340,19 @@ class VectorRacer:
 
     def show_path_map(self, paths: list[tuple[list[Node], int]]) -> list[list[int]]:
         mat = self.get_map_as_matrix()
-        car = 0
-        for i in range(len(paths[0][0]) - 1):
-            current_point = paths[0][0][i]
-            next_point = paths[0][0][i + 1]
-            print("current_point =", current_point)
-            print("next_point =", next_point)
-            caminho = self.check_colision(current_point.get_posicao(), next_point.get_velocidade(), next_point.get_posicao())
-            print("caminho = ", caminho)
-            caminho = [] if caminho is None else caminho[0]
-
-            for point in caminho:
-                print("ola")
-                mat[point[0]][point[1]] = car + 4 
+        number_cars = len(paths)
+        for (car, path) in enumerate(paths):
+            for i in range(len(path[0]) - 1):
+                current_point = path[0][i]
+                next_point = path[0][i + 1]
+                caminho = self.check_colision(current_point.get_posicao(), next_point.get_velocidade(), next_point.get_posicao())
+                caminho = [] if caminho is None else caminho[0]
+    
+                for point in caminho:
+                    if mat[point[0]][point[1]] >= 5 and mat[point[0]][point[1]] < number_cars + 5:
+                        mat[point[0]][point[1]] = number_cars + 5
+                    elif mat[point[0]][point[1]] < 5:
+                        mat[point[0]][point[1]] = car + 5
             
+
         return mat

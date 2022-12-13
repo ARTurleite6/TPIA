@@ -73,8 +73,9 @@ def main():
                 caminho = racer.dfs()
                 print(caminho)
                 if caminho is not None:
-                    caminho_str = list(map(lambda nodo: str(nodo), caminho[0][0]))
-                    print("caminho =", caminho_str, ", custo=", caminho[0][1])
+                    for (index, c) in enumerate(caminho):
+                        caminho_str = list(map(lambda nodo: str(nodo), caminho[index][0]))
+                        print("caminho =", caminho_str, ", custo=", caminho[index][1])
                     mat = racer.show_path_map(caminho)
                     pl.imshow(mat)
                     pl.show()
@@ -82,8 +83,9 @@ def main():
                 resultado_bfs = racer.bfs()
                 print(resultado_bfs)
                 if resultado_bfs is not None:
-                    resultado_dfs_str = list(map(lambda node: str(node), resultado_bfs[0][0]))
-                    print("caminho=",resultado_dfs_str, "custo=",resultado_bfs[0][1])
+                    for (index, caminho) in enumerate(resultado_bfs):
+                        resultado_dfs_str = list(map(lambda node: str(node), resultado_bfs[index][0]))
+                        print("caminho=",resultado_dfs_str, "custo=",resultado_bfs[index][1])
                     mat = racer.show_path_map(resultado_bfs)
                     pl.imshow(mat)
                     pl.show()
