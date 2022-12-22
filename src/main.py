@@ -20,10 +20,9 @@ def main():
     saida = -1
     while saida != 0:
         if mudar:
-            print("1-Gerar mapa")
-            print("2-Escolher mapa")
+            print("1-Escolher mapa")
             map_choice = int(input()) 
-            if map_choice == 2:
+            if map_choice == 1:
                 for i in range(len(maps)):
                     print(f"{i + 1}-Mapa {i + 1}") 
                     print(print_map(maps[i]))
@@ -51,8 +50,10 @@ def main():
             print("4-Imprimir arestas de Grafo")
             print("5-DFS")
             print("6-BFS")
-            print("7-Representa mapa")
-            print("8-Mudar de Mapa")
+            print("7-A_STAR")
+            print("8-GREEDY")
+            print("9-Representa mapa")
+            print("10-Mudar de Mapa")
             print("0-Sair")
 
             saida = int(input("introduza a sua opcao-> "))
@@ -71,7 +72,6 @@ def main():
                 input("prima enter para continuar")
             elif saida == 5:
                 caminho = racer.dfs()
-                print(caminho)
                 if caminho is not None:
                     for (index, c) in enumerate(caminho):
                         caminho_str = list(map(lambda nodo: str(nodo), caminho[index][0]))
@@ -81,7 +81,6 @@ def main():
                     pl.show()
             elif saida == 6:
                 resultado_bfs = racer.bfs()
-                print(resultado_bfs)
                 if resultado_bfs is not None:
                     for (index, caminho) in enumerate(resultado_bfs):
                         resultado_dfs_str = list(map(lambda node: str(node), resultado_bfs[index][0]))
@@ -90,11 +89,28 @@ def main():
                     pl.imshow(mat)
                     pl.show()
             elif saida == 7:
+                resultado_a_str = racer.a_star()
+                if resultado_a_str is not None:
+                    for (index, caminho) in enumerate(resultado_a_str):
+                        resultado_dfs_str = list(map(lambda node: str(node), resultado_a_str[index][0]))
+                        print("caminho=", resultado_a_str, "custo=",resultado_a_str[index][1])
+                    mat = racer.show_path_map(resultado_a_str)
+                    pl.imshow(mat)
+                    pl.show()
+            elif saida == 8:
+                resultado_greedy_str = racer.greedy()
+                if resultado_greedy_str is not None:
+                    for (index, caminho) in enumerate(resultado_greedy_str):
+                        resultado_dfs_str = list(map(lambda node: str(node), resultado_greedy_str[index][0]))
+                        print("caminho=", resultado_greedy_str, "custo=",resultado_greedy_str[index][1])
+                    mat = racer.show_path_map(resultado_greedy_str)
+                    pl.imshow(mat)
+                    pl.show()
+            elif saida == 9:
                 mat = racer.get_map_as_matrix()
-                print(mat)
                 pl.imshow(mat)
                 pl.show()
-            elif saida == 8:
+            elif saida == 10:
                 print("Mudando de mapa")
                 mudar = True
             else:

@@ -3,6 +3,8 @@ from graph import Node, Graph
 from queue import Queue
 from time import time
 
+import math
+
 class VectorRacer:
     """
     Classe que representa a maior parte do jogo do VectorRacer
@@ -106,6 +108,12 @@ class VectorRacer:
         return resultados
             
 
+    def calcula_distancia_fim(self, node: tuple[int, int]):
+        distancias = []
+        for ponto in self.posicoes_finais:
+            distancias.append(math.sqrt(math.pow(node[0] - ponto[0], 2) + math.pow(node[1] - ponto[1], 2)))
+        return min(distancias)
+
     """
     Funcao que gera o grafo a partir do mapa definido, explorando as opções a partir de um estado 
     """
@@ -126,6 +134,8 @@ class VectorRacer:
     
                 for estado in estados_possiveis:
                     if estado not in estados_visitados:
+                        nodo_atual[0].set_heuristica(self.calcula_distancia_fim(nodo_atual[0].get_posicao()))
+                        estado[0].set_heuristica(self.calcula_distancia_fim(nodo_atual[0].get_posicao()))
                         graph.add_edge(nodo_atual[0], estado[0], estado[1]) 
                         queue.put(estado)
                         estados_visitados.add(estado)
@@ -195,18 +205,20 @@ class VectorRacer:
         velocidade_atual = list(velocidade)
         current_position = list(posicao_atual)
 
-        while current_position[0] != posicao_final[0] or current_position[1] != posicao_final[1]:
+        while (current_position[0] != posicao_final[0] or current_position[1] != posicao_final[1]) and velocidade_atual != [0, 0]:
             path.append((current_position[0], current_position[1]))
             if (self.map[current_position[0]][current_position[1]] == 'F'):
                 return (path, (current_position[0], current_position[1]))
             if abs(velocidade_atual[0]) == abs(velocidade_atual[1]):
+                pos_x = current_position[0]
+                pos_y = current_position[1]
                 if velocidade_atual[0] < 0:
                     pos_y = current_position[0] - 1
-                else:
+                elif velocidade_atual[0] > 0:
                     pos_y = current_position[0] + 1
                 if velocidade_atual[1] < 0:
                     pos_x = current_position[1] - 1
-                else:
+                elif velocidade_atual[1] > 0:
                     pos_x = current_position[1] + 1
                 if not self.check_bounds([pos_y, pos_x]) or (self.map[current_position[0]][pos_x] == 'X' and self.map[pos_y][current_position[1]] == 'X') or self.map[pos_y][pos_x] == 'X':
                     return None
@@ -214,13 +226,14 @@ class VectorRacer:
                 current_position = [pos_y, pos_x]
                 if velocidade_atual[0] < 0:
                     velocidade_atual[0] += 1 
-                else:
+                elif velocidade_atual[0] > 0:
                      velocidade_atual[0] -= 1
                 if velocidade_atual[1] < 0:
                     velocidade_atual[1] += 1 
-                else:
+                elif velocidade_atual[1] > 0:
                      velocidade_atual[1] -= 1
             elif abs(velocidade_atual[0]) > abs(velocidade_atual[1]):
+                pos_y = current_position[0]
                 if velocidade_atual[0] < 0:
                     pos_y = current_position[0] - 1
                 else:
@@ -234,6 +247,7 @@ class VectorRacer:
                 else:
                     velocidade_atual[0] -= 1
             elif abs(velocidade_atual[0]) < abs(velocidade_atual[1]):
+                pos_x = current_position[1]
                 if velocidade_atual[1] < 0:
                     pos_x = current_position[1] - 1
                 else:
@@ -284,7 +298,6 @@ class VectorRacer:
         self.graphs.clear()
         self.posicao_inicial.clear()
         self.posicoes_finais.clear()
-        print("numero de grafos = ",len(self.graphs))
         self.map: list[str] = []
         with open(file) as f:
             content = f.read().splitlines()
@@ -295,6 +308,9 @@ class VectorRacer:
         self.posicoes_finais = self.calcula_posicoes_finais()
         self.load_graph()
 
+    """
+    Funcao que retorna uma string representando o estado do VectorRacer
+    """
     def __str__(self):
         value = f"VectorRacer(posicao_inicial = {self.posicao_inicial}, \nmap = \n graph = {self.graphs}"
         for line in self.map:
@@ -303,6 +319,9 @@ class VectorRacer:
         value += ");"
         return value
 
+    """
+    Funcao que calcula se existe colisao num determinado ponto entre todos os paths dados por um algoritmo
+    """
     def __caminho_colisao__(self, index: int, my_path: list[Node], other_paths: list[list[Node]]) -> tuple[Node, Node, int] | None:
         for(n_node, node) in enumerate(my_path):
             for (n_path, path) in enumerate(other_paths):
@@ -311,31 +330,36 @@ class VectorRacer:
                 if n_node < len(path) - 1:
                     fst_velocidade = node.get_velocidade()
                     snd_velocidade = path[n_node].get_velocidade()
+                    # Verificar a diferenca de velocidades dos carros num determinado ponto, para dar prioridade àquele que se deslocava com maior velocidade
                     if node.get_posicao() == path[n_node].get_posicao() and fst_velocidade[0] + fst_velocidade[1] < snd_velocidade[0] + snd_velocidade[1]:
-                        print("nodo_fst =", str(node.get_posicao()), "nodo_snd =", str(path[n_node].get_posicao()))
                         return node, path[n_node], n_node
         
         return None
                 
 
+    """
+    Funcao que a partir de uma lista de caminhos, tenta encontrar caminhos que não tenham colisões
+    """
     def get_valid_paths(self, paths: list[tuple[list[Node], int]], algoritmo: Callable[[Graph, Node, list[tuple[int, int]], list[Node], set[Node]], tuple[list[Node], int] | None]) -> list[tuple[list[Node], int]]:
         for (i, path) in enumerate(paths):
             posicoes_colisoes = set()
+            # verificar se existe alguma colisao nos caminhos atuais
             colisao = self.__caminho_colisao__(i, path[0], list(map(lambda path: path[0], paths)))
             new_path = path
             while colisao is not None:
-                if new_path is not None:
-                    print(list(map(lambda node: str(node), new_path[0])))
                 (fst, snd, _) = colisao
                 fst_velocidade = fst.get_velocidade()
                 snd_velocidade = snd.get_velocidade()
+                # verificar as velocidades
                 if fst_velocidade[0] + fst_velocidade[1] < snd_velocidade[0] + snd_velocidade[1]:
+                    #adicionar ponto como ponto proibido na travessia, para que não volte a passar por lá
                     posicoes_colisoes.add(fst) 
-                    print("colisoes =", list(map(lambda node: str(node), posicoes_colisoes)))
+                    # efetuar outra travessia com o algoritmo passado, para que calcule um caminho sem colisoes
                     new_path = algoritmo(self.graphs[i], self.posicao_inicial[i], self.posicoes_finais, [], posicoes_colisoes)
                     if new_path is None:
                         break
                         
+                #verificar se novo caminho é válido
                 colisao = self.__caminho_colisao__(i, new_path[0], list(map(lambda path: path[0], paths)))
             if new_path is not None:
                 paths[i] = new_path
@@ -362,12 +386,36 @@ class VectorRacer:
         ans: list[tuple[list[Node], int]] = []
         for(index, graph) in enumerate(self.graphs):
             caminho = graph.bfs(self.posicao_inicial[index], self.posicoes_finais, [], set())
-            print("caminho do indice =", index, "com caminho =", list(map(lambda node: str(node), caminho[0])))
             if caminho is not None:
                 ans.append(caminho)
 
         ans = self.get_valid_paths(ans, Graph.bfs)
         return ans
+
+    """
+    Funcao que calcula um caminho através do algoritmo A_Star
+    """
+    def a_star(self):
+        ans: list[tuple[list[Node], int]] = []
+        for (index, graph) in enumerate(self.graphs):
+            caminho = graph.bfs(self.posicao_inicial[index], self.posicoes_finais, [], set())
+            if caminho is not None:
+                ans.append(caminho)
+        ans = self.get_valid_paths(ans, Graph.a_star)
+        return ans
+
+    """
+    Funcao que calcula um caminho através do algoritmo Greedy
+    """
+    def greedy(self):
+        ans: list[tuple[list[Node], int]] = []
+        for (index, graph) in enumerate(self.graphs):
+            caminho = graph.greedy(self.posicao_inicial[index], self.posicoes_finais, [], set())
+            if caminho is not None:
+                ans.append(caminho)
+        ans = self.get_valid_paths(ans, Graph.greedy)
+        return ans
+        
 
     def show_path_map(self, paths: list[tuple[list[Node], int]]) -> list[list[int]]:
         mat = self.get_map_as_matrix()

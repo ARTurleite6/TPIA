@@ -1,0 +1,13 @@
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+X-P-X----------XXXX------X-------------------X--------------X-X-X-X--X----XX---F
+XX---X--------X----X---X------------------X----X----X--X----X----------XXX-----X
+X-X---X------X------X-------------XXX-------------X------X----X---X---X--------F
+X--X---X----X--------XXX-XX-X--------------------X-X--XX----------X--X---X-----X
+X---X---XXXX--------------X----------XXX--------X----X-------XX---X----X-------F
+X---X---------------------X---X------X----X------X------------X---------XX-----X
+X---X---XXXX--------------X-----X-------X--X----X-------X-X-----------X--XX----F
+X--X---X----X--------XXXX-X-------X-X--X-----X---------------X-X--X-------XX---X
+X-X---X------X------X--X-----------------X---XXX----------X----------X--X------F
+XX---X--------X----X----X--X------------X----XX--XX--X----X---X-----XX---------X
+X-P-X----------XXXX----X----X-------------------XXX--XX-------X--------XXX-----F
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
